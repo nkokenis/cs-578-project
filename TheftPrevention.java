@@ -4,10 +4,26 @@
  * 
  */
 public class TheftPrevention {
+    private class ShutdownHook extends Thread
+  {
+    public void run()
+    {
+      // we need to handle the case where user or theif shuts down app or computer
+      // maybe user makes password when app launches and password must be used again to end
+      // end app without alarm going off
+      System.out.println("Program shutting down.");
+    }
+  }
+
   private ACAdapter acAdapter;
+
+  private ShutdownHook hook;
 
   public TheftPrevention() {
     acAdapter = new ACAdapter();
+
+    hook = new ShutdownHook();
+    Runtime.getRuntime().addShutdownHook(hook);
   }
 
   /*
