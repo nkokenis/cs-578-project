@@ -14,7 +14,9 @@ class TheftPrevention{
     if(system.equals("Mac OS X")){
       try{
         
-        executeScript();
+        while(executeScript()){
+          Thread.sleep(1000);
+        }
 
       } catch (IOException e) {
         System.out.println("IO Exception!!");
@@ -31,22 +33,30 @@ class TheftPrevention{
   }
 
 
-  public static void executeScript() throws IOException, InterruptedException {
-    Process p = Runtime.getRuntime().exec("sh /Users/garrettohara/Desktop/sdsu/WirelessNetworks/cs-578-project/SystemDetection.sh");
+  public static boolean executeScript() throws IOException, InterruptedException {
+    Process p = Runtime.getRuntime().exec("sh /Users/garrettohara/Desktop/sdsu/WirelessNetworks/cs-578-project/CheckPower.sh");
     p.waitFor();
 
     BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
     BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
+    // while ((line = reader.readLine()) != null) {
+    // System.out.println(line);
+    // }
 
     String line = "";
-    while ((line = reader.readLine()) != null) {
-        System.out.println(line);
+    while ((line = errorReader.readLine()) != null) {
+      System.out.println(line);
     }
 
     line = "";
-    while ((line = errorReader.readLine()) != null) {
-        System.out.println(line);
-    }
+    line = reader.readLine();
+    if(line.equals("Now drawing from \'AC Power\'")){
+      System.out.println("System is connected: "+line);
+      return true;
+    } else {
+      System.out.println("Device is DISCONNECTED: "+line);
+      return false;
+    }    
   }
 }
