@@ -1,4 +1,8 @@
 
+import java.applet.Applet;
+import java.io.Console;
+import java.util.Arrays;
+
 /**
  * @author Garrett, Ryan
  * 
@@ -15,12 +19,15 @@ public class TheftPrevention {
     }
   }
 
-  private ACAdapter acAdapter;
+  private ACAdapter ac_adapter;
 
   private ShutdownHook hook;
 
+  private SecurePassword s_password;
+
   public TheftPrevention() {
-    acAdapter = new ACAdapter();
+    s_password = new SecurePassword();
+    ac_adapter = new ACAdapter();
 
     hook = new ShutdownHook();
     Runtime.getRuntime().addShutdownHook(hook);
@@ -33,9 +40,21 @@ public class TheftPrevention {
    */
   public void run() {
     try{
+
+      /*
+      // code to test secure password.
+      // I think we need to implement password so that theif cannot exit application. - Ryan 
+      Console con = System.console();
+      System.out.print("Set password: ");
+      s_password.set(con.readPassword());
+
+      System.out.print("Enter password: ");
+      System.out.println(s_password.compare(con.readPassword()));
+      */
+
       while(true)
       {
-        System.out.println("isPluggedIn:" + acAdapter.isPluggedIn());
+        System.out.println("isPluggedIn:" + ac_adapter.isPluggedIn());
         Thread.sleep(1000);
       }
     }catch(Exception e){
