@@ -9,8 +9,10 @@ public class ACAdapter {
     private static String windows_lib = "theft_lib_winx64";
 
     private String OS;
+    private String PATH;
     
     private boolean isWindows;
+    private boolean isMac;
 
     public ACAdapter()
     {
@@ -20,6 +22,9 @@ public class ACAdapter {
         if(OS.contains("windows")){
             System.loadLibrary(windows_lib);
             isWindows = true;
+        } else if(OS.equals("mac os x")){
+            isMac = true;
+            isWindows = false;
         }
         else
         {
@@ -34,45 +39,83 @@ public class ACAdapter {
             return isPluggedInWin();
         else
             return isPluggedInShell();
+        // executeScript(PATH);
+        //  return isPluggedInShell();
     }
 
     private native boolean isPluggedInWin();
 
     /**
      * @author Garrett
-     * @return
+     * @return boolean
      */
     private boolean isPluggedInShell() {
+
         try {
-        // Process p = Runtime.getRuntime().exec("sh CheckPower.sh", new String[0], new
-        // File("."));
-        Process p = Runtime.getRuntime()
-            .exec("sh /Users/garrettohara/Desktop/sdsu/WirelessNetworks/cs-578-project/CheckPower.sh");
+            PATH = getFilePath();
+            while (executeScript(PATH)) {
+                Thread.sleep(1000);
+            }
+            return false;
+
+        } catch (IOException e) {
+            System.out.println("IO Exception!!");
+            e.printStackTrace();
+            ;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    /**
+     * @author Garrett
+     * @return boolean
+     */
+    public static boolean executeScript(String path) throws IOException, InterruptedException {
+        String cmd = "sh " + path + "/CheckPower.sh";
+        Process p = Runtime.getRuntime().exec(cmd);
         p.waitFor();
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
         BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
-        // while ((line = reader.readLine()) != null) {
-        // System.out.println(line);
-        // }
-
         String line = "";
         while ((line = errorReader.readLine()) != null) {
-            System.err.println(line);
+            System.out.println(line);
+            return false;
         }
 
         line = "";
         line = reader.readLine();
         if (line.equals("Now drawing from \'AC Power\'")) {
-            // System.out.println("System is connected: "+line);
+            System.out.println("System is connected: " + line);
             return true;
+        } else {
+            System.out.println("Device is DISCONNECTED: " + line);
+            return false;
         }
-        } catch (Exception e) {
-        e.printStackTrace();
-        System.exit(1);
+    }
+    
+    /**
+     * @author Garrett
+     * @return String
+     */
+    public static String getFilePath() throws IOException, InterruptedException {
+        Process p = Runtime.getRuntime().exec("pwd");
+        p.waitFor();
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        BufferedReader errorReader = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+
+        String line = "";
+        while ((line = errorReader.readLine()) != null) {
+            System.out.println(line);
         }
 
-        return false;
+        line = "";
+        return new String(reader.readLine());
     }
 }
