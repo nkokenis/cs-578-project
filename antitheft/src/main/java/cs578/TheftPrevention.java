@@ -1,7 +1,4 @@
-
-import java.applet.Applet;
-import java.io.Console;
-import java.util.Arrays;
+package cs578;
 
 /**
  * @author Garrett, Ryan
@@ -31,6 +28,7 @@ public class TheftPrevention {
 
     hook = new ShutdownHook();
     Runtime.getRuntime().addShutdownHook(hook);
+    
   }
 
   /*
@@ -52,31 +50,14 @@ public class TheftPrevention {
       System.out.println(s_password.compare(con.readPassword()));
       */
 
+      int i = 0;
       while(true)
       {
-        System.out.println("isPluggedIn:" + ac_adapter.isPluggedIn());
+        System.out.println("isPluggedIn (" + (++i) + "):" + ac_adapter.isPluggedIn());
         Thread.sleep(1000);
       }
     }catch(Exception e){
       e.printStackTrace();
     }
-  }
-
-  /**
-   * @author
-   * @desc enables the TheftPrevention system
-   */
-  public void enable()
-  {
-
-  }
-
-  /**
-   * @author
-   * @desc disables the TheftPrevention system
-   */
-  public void disable()
-  {
-
   }
 }

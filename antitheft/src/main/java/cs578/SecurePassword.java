@@ -1,3 +1,5 @@
+package cs578;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -22,7 +24,8 @@ public class SecurePassword
         SecureRandom random = new SecureRandom();
         random.nextBytes(salt);
       }
-      System.out.println(Arrays.toString(salt));
+      
+     // System.out.println(Arrays.toString(salt));
     }
 
     public String getHashAlgorithm()

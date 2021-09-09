@@ -1,3 +1,5 @@
+package cs578;
+
 import java.io.*;
 
 /**
@@ -6,7 +8,8 @@ import java.io.*;
  */
 public class ACAdapter {
     // don't include file extension
-    private static String windows_lib = "theft_lib_winx64";
+    //private static String windows_lib = "theft_lib_winx64";
+    private static String windows_lib;
 
     private String OS;
     private String PATH;
@@ -16,11 +19,13 @@ public class ACAdapter {
 
     public ACAdapter()
     {
+        windows_lib = this.getClass().getResource("theft_lib_winx64.dll").getPath();
+        //windows_lib = windows_lib.substring(0, windows_lib.lastIndexOf('.'));
         OS = System.getProperty("os.name").toLowerCase();
 
         // used to determine which isPluggedIn method to use
         if(OS.contains("windows")){
-            System.loadLibrary(windows_lib);
+            System.load(windows_lib);
             isWindows = true;
         } else if(OS.equals("mac os x")){
             isMac = true;
