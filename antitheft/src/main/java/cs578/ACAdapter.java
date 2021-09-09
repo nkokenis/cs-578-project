@@ -19,13 +19,19 @@ public class ACAdapter {
 
     public ACAdapter()
     {
-        windows_lib = this.getClass().getResource("theft_lib_winx64.dll").getPath();
-        //windows_lib = windows_lib.substring(0, windows_lib.lastIndexOf('.'));
         OS = System.getProperty("os.name").toLowerCase();
 
         // used to determine which isPluggedIn method to use
         if(OS.contains("windows")){
-            System.load(windows_lib);
+            try {
+                String path = new java.io.File(".").getCanonicalPath() + "\\resources\\theft_lib_winx64.dll";
+                System.load(path);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+                System.exit(1);
+            }
+
             isWindows = true;
         } else if(OS.equals("mac os x")){
             isMac = true;
@@ -80,7 +86,7 @@ public class ACAdapter {
      * @return boolean
      */
     public static boolean executeScript(String path) throws IOException, InterruptedException {
-        String cmd = "sh " + path + "/CheckPower.sh";
+        String cmd = "sh " + path + "/resources/CheckPower.sh";
         Process p = Runtime.getRuntime().exec(cmd);
         p.waitFor();
 
