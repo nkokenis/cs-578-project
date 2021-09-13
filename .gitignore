@@ -1,6 +1,8 @@
 
 # Created by https://www.toptal.com/developers/gitignore/api/macos,linux,windows,maven,visualstudiocode,eclipse
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,linux,windows,maven,visualstudiocode,eclipse
+# Environemnt variables
+.env
 
 ### Eclipse ###
 .metadata
