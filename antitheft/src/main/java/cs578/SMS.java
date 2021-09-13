@@ -10,10 +10,11 @@ public class SMS {
 
   public static void main(String[] args) {
     Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
-
+    /*
     Message message = Message.creator(new PhoneNumber("+19254378380"),
         "Testing SMS messaging").create();
-
+    
     System.out.println(message.getSid());
+    */
   }
 }
