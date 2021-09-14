@@ -9,9 +9,8 @@ def main():
     if(battery is None):
         print("This device does not have a battery. Exiting...")
         sys.exit(1)
-    
+
     while(True):
-        battery = psutil.sensors_battery()
 
         while(psutil.sensors_battery().power_plugged):
             print("Running on AC Power")
