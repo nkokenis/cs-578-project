@@ -1,14 +1,18 @@
+from sms import send_sms
+from sms import verify_sms
 import sys
 import psutil
 import time
-from SMS import send_sms
 
 
-def main():
+def detect_power():
     battery = psutil.sensors_battery()
     if(battery is None):
         print("This device does not have a battery. Exiting...")
         sys.exit(1)
+
+    #need to dynamically verify the user's phone number before using it to send sms
+    verify_sms()
     
     while(True):
         battery = psutil.sensors_battery()
@@ -27,6 +31,6 @@ def main():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    main()
+    detect_power()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
