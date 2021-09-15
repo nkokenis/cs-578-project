@@ -1,5 +1,6 @@
-from sms import send_sms
-from sms import verify_sms
+from SMS import send_sms
+from SMS import verify_sms
+from Alarm import play_alarm_mac
 import sys
 import psutil
 import time
@@ -21,7 +22,7 @@ def detect_power():
             print("Running on AC Power")
             time.sleep(1)
     
-        send_sms()
+        send_sms("REPLACE WITH USER PHONE NUMBER")
 
         while(not psutil.sensors_battery().power_plugged):
             print("Running on Battery Power")
@@ -29,7 +30,7 @@ def detect_power():
 
     
 
-# Press the green button in the gutter to run the script.
+# Press the green button in the GUI to run the script.
 if __name__ == '__main__':
     detect_power()
 

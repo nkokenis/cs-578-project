@@ -4,6 +4,12 @@
 # Environemnt variables
 .env
 
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
 ### Eclipse ###
 .metadata
 bin/
@@ -32,23 +38,8 @@ local.properties
 # CDT- autotools
 .autotools
 
-# Java annotation processor (APT)
-.factorypath
-
-# PDT-specific (PHP Development Tools)
-.buildpath
-
-# sbteclipse plugin
-.target
-
-# Tern plugin
-.tern-project
-
 # TeXlipse plugin
 .texlipse
-
-# STS (Spring Tool Suite)
-.springBeans
 
 # Code Recommenders
 .recommenders/
@@ -56,11 +47,6 @@ local.properties
 # Annotation Processing
 .apt_generated/
 .apt_generated_test/
-
-# Scala IDE specific (Scala & Java development for Eclipse)
-.cache-main
-.scala_dependencies
-.worksheet
 
 # Uncomment this line if you wish to ignore the project description file.
 # Typically, this file would be tracked if it contains build/dependency configurations:
@@ -114,28 +100,8 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-### Maven ###
-target/
-pom.xml.tag
-pom.xml.releaseBackup
-pom.xml.versionsBackup
-pom.xml.next
-release.properties
-dependency-reduced-pom.xml
-buildNumber.properties
-.mvn/timing.properties
-# https://github.com/takari/maven-wrapper#usage-without-binary-jar
-.mvn/wrapper/maven-wrapper.jar
 
-### Maven Patch ###
-# Eclipse m2e generated files
-# Eclipse Core
-.project
-# JDT-specific (Eclipse Java Development Tools)
-.classpath
-
-### VisualStudioCode ###
-.vscode/*
+## Visual Studio Code ##
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
