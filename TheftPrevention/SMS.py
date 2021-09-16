@@ -6,7 +6,7 @@ from twilio.base.exceptions import TwilioRestException
 from flask import Flask, request, redirect
 from twilio.twiml.messaging_response import MessagingResponse
 
-"""REST API Exception"""
+#REST API Exception
 class PhoneNumberVerificationError(Exception):
     pass
 class OTPVerificationError(Exception):
@@ -14,41 +14,38 @@ class OTPVerificationError(Exception):
 class NoResponseError(Exception):
     pass
 
-"""REST API Authentication"""
+#REST API Authentication
 account_sid = config('SID')
 auth_token  = config('TOKEN')
 service_sid  = config('SERVICE_SID')
 
-
-msg=\
-"""
-Notice from TheftPrevention
-
-Your device has been DISCONNECTED!
-"""
-
-
-"""Instantiate REST API client"""
+#Initialize REST API Client
 client = Client(account_sid, auth_token)
 
-
 """
+Function:
+Send SMS
+
+Description:
 Sends a text message to the user when the power is disconnected
+
 Documentation: 
 https://www.twilio.com/docs/sms/send-messages#post-parameters-conditional
 
-Twilio phone number are code location: (anaheim, ca)
+Parameters:
+N/A
 
-Parameters
-----------
-Void
-
-Returns
--------
+Returns:
 sid: String
-    reponse from SMS client
+    response from SMS client
 """
-def send_sms(phone_number):    
+def send_sms(phone_number):
+    msg=\
+    """
+    Notice from TheftPrevention
+
+    Your device has been disconnected!
+    """
     message = client.messages.create(
         to=phone_number,
         from_="+16572014198",
@@ -56,14 +53,17 @@ def send_sms(phone_number):
     )
     return message.sid
 
-
 """
-Sends pings the users phoen so they can verify the device
+Function:
+Send Verification Code
+
+Description:
+Pings the user's phone so they can verify the current device
+
 Documentation:
 https://www.twilio.com/docs/verify/api/verification#verification-response-properties
 
-Parameters
-----------
+Parameters:
 phone_number: String
     Device phone number, must be in E.164 format
     E.164: https://www.twilio.com/docs/glossary/what-e164
@@ -71,10 +71,9 @@ channel: String
     User can choose wether they want a call or text
     Default is set to text
 
-Returns
--------
+Returns:
 device_sid: String
-    Device Sid (unique device identifyer)
+    Device SID (unique device identifyer)
 """
 def send_verification_code(phone_number, channel='sms'):
     try:
@@ -89,25 +88,26 @@ def send_verification_code(phone_number, channel='sms'):
         return verification
     except NoResponseError:
         print("There was no response from Twilio")
-
     except TwilioRestException:
         print("There was an error verifying the phone number")
 
-
 """
-Verify the users phone number based on the code
+Fucntion:
+Verify Code
+
+Description:
+Verify the user's phone number based on the code
+
 Documentation:
 https://www.twilio.com/docs/verify/api/verification-check?code-sample=code-check-a-verification-with-a-phone-number&code-language=Python&code-sdk-version=6.x
 
-Parameters
-----------
+Parameters:
 code: String
     OTP verification code
 
-Returns
--------
+Returns:
 status: String
-    Status of verification
+    Status of the verification
 """
 def verify_code(code):
     try:
@@ -120,20 +120,22 @@ def verify_code(code):
     except TwilioRestException as e:
         tmp = "There was an error verifying the confirmation code"
         print(tmp)
-        # raise OTPVerificationError(tmp) from e
-
+        #raise OTPVerificationError(tmp) from e
 
 """
-Create a new Service int he Twilio API
-Parameters
-----------
-name: String
-    'friendly name' of account/alias
+Function:
+Create New Service
 
-Returns
--------
+Description:
+Create a new service for the Twilio API
+
+Parameters:
+name: String
+    'Friendly name' of account/alias
+
+Returns:
 response: String
-    http request response
+    HTTP request response
 """
 def __create_new_service(name):
     print(name)
@@ -141,26 +143,27 @@ def __create_new_service(name):
 
 
 """
-Using flask and the Twilio API to respond to text messages sent to the bought Twilio number (anaheim, ca)
+Function:
+SMS Reply
+
+Description:
+Respond to the user's acknowledgement
+
+Parameters:
+N/A
+
+Returns:
+str(resp): String
+    The user's response casted as a String
 """
 app = Flask(__name__)
 
 @app.route("/sms", methods=['GET', 'POST'])
 def sms_reply():
-    """Respond to incoming calls with a simple text message."""
-    # Start our TwiML response
     resp = MessagingResponse()
-
-    # Add a message
     resp.message("Thanks for letting us know you've received your laptop, we'll shut down the program now")
 
     return str(resp)
-
-
-
-"""Function calls for testing"""
-# print(verify_sms())
-# print(send_sms())
 
 # Garrett's Phone Number    +19254378380
 # Ryan's Phone Number       +18582185453

@@ -44,7 +44,6 @@ def user_setup():
             opt = input('Enter your verification code: ')
         time.sleep(5)
 
-
 def main():
     try:
         print("\n"+text.line)
@@ -61,20 +60,19 @@ def main():
         if('y' in res):
             print("\n\nThanks for your support :)\n\nThe program is booting up...\n\n")
 
-        # elif('i' in res):
-        #     name = input("Please enter your username: ")
-        #     if check_user(name) is not None:
-        #         print("You are already authenticated")
-        #     else:
-        #         print("No authentication present")
-        #         print("\n\nNo worries, lets get you set up!\n\n")
-        #         verify_sms()
+        #elif('i' in res):
+        #    name = input("Please enter your username: ")
+        #    if check_user(name) is not None:
+        #        print("You are already authenticated")
+        #    else:
+        #        print("No authentication present")
+        #        print("\n\nNo worries, lets get you set up!\n\n")
+        #        verify_sms()
         
         else:
             print("\n\nOkay lets get you {}certified!{}\n".format(text.ITALIC,text.ENDC))
             user_setup()
 
-    
     except KeyboardInterrupt:
         print("\nUser stopped program with Keybaord Interrupt.\nShutting down...")
         try:
@@ -105,6 +103,7 @@ def main():
         except SystemExit:
             os._exit(1)
 
-if __name__ == "__main__": main()
+if __name__ == "__main__":
+    main()
 
 # 6572014198
