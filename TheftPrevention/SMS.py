@@ -1,16 +1,41 @@
+import time
+from typing import Tuple
 from decouple import config
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
 
+"""REST API Exception"""
+class PhoneNumberVerificationError(Exception):
+    pass
+class OTPVerificationError(Exception):
+    pass
+class NoResponseError(Exception):
+    pass
+
 """REST API Authentication"""
 account_sid = config('SID')
 auth_token  = config('TOKEN')
+service_sid  = config('SERVICE_SID')
+
+
+msg=\
+"""
+Notice from TheftPrevention
+
+Your device has been DISCONNECTED!
+"""
+
 
 """Instantiate REST API client"""
 client = Client(account_sid, auth_token)
 
+
 """
 Sends a text message to the user when the power is disconnected
+Documentation: 
+https://www.twilio.com/docs/sms/send-messages#post-parameters-conditional
+
+Twilio phone number are code location: (anaheim, ca)
 
 Parameters
 ----------
@@ -21,50 +46,83 @@ Returns
 sid: String
     reponse from SMS client
 """
-def send_sms(phone_number):
-    print(phone_number)
+def send_sms(phone_number):    
     message = client.messages.create(
-        #using garrett's phone number for testing
-        to="+19254378380",
-        #twilio phone number we bought (anaheim, ca)
+        to=phone_number,
         from_="+16572014198",
-        body="Test"
+        body=msg
     )
     return message.sid
 
+
 """
-Dynamic-link phone number verification
+Sends pings the users phoen so they can verify the device
+Documentation:
+https://www.twilio.com/docs/verify/api/verification#verification-response-properties
 
 Parameters
 ----------
-Void
+phone_number: String
+    Device phone number, must be in E.164 format
+    E.164: https://www.twilio.com/docs/glossary/what-e164
+channel: String
+    User can choose wether they want a call or text
+    Default is set to text
 
 Returns
 -------
-status: Bool
-    Authenticaction result
+device_sid: String
+    Device Sid (unique device identifyer)
 """
-def verify_sms():
+def send_verification_code(phone_number, channel='sms'):
     try:
+        verification = client.verify \
+            .services(service_sid) \
+            .verifications \
+            .create(
+                to=phone_number,
+                channel=channel)
+        if verification is None:
+            raise NoResponseError
+        return verification
+    except NoResponseError:
+        print("There was no response from Twilio")
 
-        username = input("What would you like your username to be?: ")
-        phone_number = input("What is your phone number?: ")
-
-        validation_request = client.validation_requests.create(
-                friendly_name=username,
-                phone_number=phone_number
-        )
-        print(validation_request)
-        return True
-    
-    except TwilioRestException as e:
-        print(e)
-        return False
+    except TwilioRestException:
+        print("There was an error verifying the phone number")
 
 
 """
-Check if the user alredy has credentials cached
+Verify the users phone number based on the code
+Documentation:
+https://www.twilio.com/docs/verify/api/verification-check?code-sample=code-check-a-verification-with-a-phone-number&code-language=Python&code-sdk-version=6.x
 
+Parameters
+----------
+code: String
+    OTP verification code
+
+Returns
+-------
+status: String
+    Status of verification
+"""
+def verify_code(code):
+    try:
+        verification_check = client.verify \
+            .services(service_sid) \
+            .verification_checks \
+            .create(to='+19254378380', code=code)
+        return verification_check.status
+
+    except TwilioRestException as e:
+        tmp = "There was an error verifying the confirmation code"
+        print(tmp)
+        # raise OTPVerificationError(tmp) from e
+
+
+"""
+Create a new Service int he Twilio API
 Parameters
 ----------
 name: String
@@ -75,7 +133,7 @@ Returns
 response: String
     http request response
 """
-def check_user(name):
+def __create_new_service(name):
     print(name)
     return client.verify.services.create(friendly_name=name)
 
@@ -85,3 +143,6 @@ def check_user(name):
 """Function calls for testing"""
 # print(verify_sms())
 # print(send_sms())
+
+# Garrett's Phone Number    +19254378380
+# Ryan's Phone Number       +18582185453
