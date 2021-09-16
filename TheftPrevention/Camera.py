@@ -1,6 +1,6 @@
 import cv2
 
-
+#function to preview the camera
 def open_camera():
     cv2.namedWindow("preview")
     vc = cv2.VideoCapture(0)
