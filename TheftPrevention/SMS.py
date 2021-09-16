@@ -3,6 +3,8 @@ from typing import Tuple
 from decouple import config
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
+from flask import Flask, request, redirect
+from twilio.twiml.messaging_response import MessagingResponse
 
 """REST API Exception"""
 class PhoneNumberVerificationError(Exception):
@@ -138,6 +140,22 @@ def __create_new_service(name):
     return client.verify.services.create(friendly_name=name)
 
 
+"""
+Using flask and the Twilio API to respond to text messages sent to the bought Twilio number (anaheim, ca)
+"""
+app = Flask(__name__)
+
+@app.route("/sms", methods=['GET', 'POST'])
+def sms_reply():
+    """Respond to incoming calls with a simple text message."""
+    # Start our TwiML response
+    resp = MessagingResponse()
+
+    # Add a message
+    resp.message("Thanks for letting us know you've received your laptop, we'll shut down the program now")
+
+    return str(resp)
+
 
 
 """Function calls for testing"""
@@ -146,3 +164,4 @@ def __create_new_service(name):
 
 # Garrett's Phone Number    +19254378380
 # Ryan's Phone Number       +18582185453
+# Nick's Phone Number       +16197726699
