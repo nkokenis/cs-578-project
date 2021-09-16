@@ -78,9 +78,9 @@ class text:
     CBEIGEBG2  = '\33[106m'
     CWHITEBG2  = '\33[107m'
 
-    def list_colors():
+    def list_colors(self):
         x = 0
-        for i in range(24):
+        for _ in range(24):
             colors = ""
             for j in range(5):
                 code = str(x+j)
