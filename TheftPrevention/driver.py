@@ -1,11 +1,12 @@
-from Text import text
-from SMS import *
-from power_detection import main
-import traceback
 import sys
 import os
 import time
+import traceback
+from Text import text
+from SMS import sms
+from power_detection import detect_power
 
+""" User defined Errors """
 class UserFailError(Exception):
     pass
 class InvalidArguments(Exception):
@@ -13,6 +14,14 @@ class InvalidArguments(Exception):
 class SystemExit(Exception):
     pass
 
+"""
+-> Function: user_setup
+Verify user's phone number
+-> Parameters:
+N/A
+-> Returns:
+N/A
+"""
 def user_setup():
     fail_count = 0
     pending = False
@@ -21,7 +30,7 @@ def user_setup():
         if not pending:
             phone_number = input('Enter your phone number: ')
         
-        result = send_verification_code(phone_number)
+        result = sms.send_verification_code(phone_number)
         print(result.status)
 
         if fail_count >= 4:
@@ -40,7 +49,7 @@ def user_setup():
     fail_count = 0
     opt = input('Enter your verification code: ')
     while True:
-        val = verify_code(phone_number,opt)
+        val = sms.verify_code(phone_number,opt)
         if fail_count >= 4:
             raise UserFailError
         elif val == "approved":
@@ -53,6 +62,16 @@ def user_setup():
             opt = input('Enter your verification code: ')
         time.sleep(15)
 
+"""
+-> Function: main
+main driver of the program
+catch all program errors and exit here
+-> Parameters:
+N/A
+-> Returns:
+Errors: Exception
+    Any errors occured
+"""
 def main():
     try:
         args = sys.argv
@@ -90,7 +109,7 @@ def main():
         print("\n\nUser stopped program with Keybaord Interrupt.\n\n")
         raise SystemExit
 
-    except NoResponseError:
+    except sms.NoResponseError:
         print("\n\nThere was no response from the Twilio REST API")
         print("Please try again.\n\n")
         raise SystemExit

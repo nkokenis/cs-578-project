@@ -32,6 +32,12 @@ $ python driver.py
 For a GUI application use:
 $ python driver.py -g
 """
+    device_disconnected=\
+"""
+Notice from TheftPrevention
+
+Your device has been DISCONNECTED!
+"""
 
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'

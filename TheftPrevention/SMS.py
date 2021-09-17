@@ -1,197 +1,137 @@
 from decouple import config
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
-from flask import Flask #, request, redirect
-from twilio.twiml.messaging_response import MessagingResponse
 
-#REST API Exception
+""" REST API Exception """
 class PhoneNumberVerificationError(Exception):
-    pass
-class OTPVerificationError(Exception):
     pass
 class NoResponseError(Exception):
     pass
+class sms:
 
-#REST API Authentication
-account_sid = config('SID')
-auth_token  = config('TOKEN')
-service_sid  = config('SERVICE_SID')
-sms_sid = config('SMS_SID')
+    """ REST API Authentication """
+    account_sid = config('SID')
+    auth_token  = config('TOKEN')
+    global sms_sid
+    sms_sid = config('SMS_SID')
 
-msg=\
-"""
-Notice from TheftPrevention
+    """ Instantiate REST API client """
+    global client 
+    client = Client(account_sid, auth_token)
 
-Your device has been DISCONNECTED!
-"""
-
-
-"""Instantiate REST API client"""
-
-#Initialize REST API Client
-client = Client(account_sid, auth_token)
-
-"""
-Function:
-Send SMS
-
-Description:
-Sends a text message to the user when the power is disconnected
-
-Documentation: 
-https://www.twilio.com/docs/sms/send-messages#post-parameters-conditional
-
-Parameters:
-N/A
-
-Returns:
-sid: String
-    response from SMS client
-"""
-def send_sms(phone_number):
-    msg=\
     """
-    Notice from TheftPrevention
+    Function:
+    Send SMS
 
-    Your device has been disconnected!
+    Description:
+    Sends a text message to the user when the power is disconnected
+
+    Documentation: 
+    https://www.twilio.com/docs/sms/send-messages#post-parameters-conditional
+
+    Parameters:
+    N/A
+
+    Returns:
+    sid: String
+        response from SMS client
     """
-    message = client.messages.create(
-        to=phone_number,
-        from_="+16572014198",
-        body=msg
-    )
-    return message.sid
+    def send_sms(self,phone_number):
+        msg=\
+        """
+        Notice from TheftPrevention
 
-"""
-Function:
-Send Verification Code
+        Your device has been disconnected!
+        """
+        message = client.messages.create(
+            to=phone_number,
+            from_="+16572014198",
+            body=msg
+        )
+        return message.sid
 
-Description:
-Pings the user's phone so they can verify the current device
+    """
+    Function:
+    Send Verification Code
 
-Documentation:
-https://www.twilio.com/docs/verify/api/verification#verification-response-properties
+    Description:
+    Pings the user's phone so they can verify the current device
 
-Parameters:
-phone_number: String
-    Device phone number, must be in E.164 format
-    E.164: https://www.twilio.com/docs/glossary/what-e164
-channel: String
-    User can choose wether they want a call or text
-    Default is set to text
+    Documentation:
+    https://www.twilio.com/docs/verify/api/verification#verification-response-properties
 
-Returns:
-device_sid: String
-    Device SID (unique device identifyer)
-"""
-def send_verification_code(phone_number, channel='sms'):
-    try:
-        verification = client.verify \
-            .services(sms_sid) \
-            .verifications \
-            .create(
-                to=phone_number,
-                channel=channel,
-                status_callback="http://127.0.0.1:5000/update-status")
-        return verification
-        # print(type(verification))
-        # if verification is None:
-        #     raise NoResponseError
-        # return verification
-    # except NoResponseError:
-    #     print("There was no response from Twilio")
+    Parameters:
+    phone_number: String
+        Device phone number, must be in E.164 format
+        E.164: https://www.twilio.com/docs/glossary/what-e164
+    channel: String
+        User can choose wether they want a call or text
+        Default is set to text
 
-    except TwilioRestException as e:
-        print("There was an error verifying the phone number")
-        print(e)
+    Returns:
+    device_sid: String
+        Device SID (unique device identifyer)
+    """
+    def send_verification_code(self,phone_number, channel='sms'):
+        try:
+            verification = client.verify \
+                .services(sms_sid) \
+                .verifications \
+                .create(
+                    to=phone_number,
+                    channel=channel,
+                    status_callback="http://127.0.0.1:5000/update-status")
+                
+            # Wait until status from Flask REST API!!!!!!!!!
+            return verification
 
-"""
-Fucntion:
-Verify Code
+        except TwilioRestException as e:
+            print("There was an error verifying the phone number")
+            print(e)
 
-Description:
-Verify the user's phone number based on the code
+    """
+    Fucntion:
+    Verify Code
 
-Documentation:
-https://www.twilio.com/docs/verify/api/verification-check?code-sample=code-check-a-verification-with-a-phone-number&code-language=Python&code-sdk-version=6.x
+    Description:
+    Verify the user's phone number based on the code
 
-Parameters:
-code: String
-    OTP verification code
+    Documentation:
+    https://www.twilio.com/docs/verify/api/verification-check?code-sample=code-check-a-verification-with-a-phone-number&code-language=Python&code-sdk-version=6.x
 
-Returns:
-status: String
-    Status of the verification
-"""
-def verify_code(phone_number,code):
-    try:
-        verification_check = client.verify \
-            .services(sms_sid) \
-            .verification_checks \
-            .create(to=phone_number, code=code)
-        return verification_check
+    Parameters:
+    code: String
+        OTP verification code
 
-    except TwilioRestException as e:
-        tmp = "There was an error verifying the confirmation code"
-        print(tmp)
-        #raise OTPVerificationError(tmp) from e
+    Returns:
+    status: String
+        Status of the verification
+    """
+    def verify_code(self,phone_number,code):
+        try:
+            verification_check = client.verify \
+                .services(sms_sid) \
+                .verification_checks \
+                .create(to=phone_number, code=code)
+            return verification_check
 
-"""
-Function:
-Create New Service
-
-Description:
-Create a new service for the Twilio API
-
-Parameters:
-name: String
-    'Friendly name' of account/alias
-
-Returns:
-response: String
-    HTTP request response
-"""
-def __create_new_service(name):
-    print(name)
-    return client.verify.services.create(friendly_name=name)
+        except TwilioRestException as e:
+            tmp = "There was an error verifying the confirmation code\n\n"
+            print(tmp)
+            print(e)
 
 
-"""
-Function:
-SMS Reply
+    """Function calls for testing"""
+    # print(verify_sms())
+    # print(send_sms())
 
-Description:
-Respond to the user's acknowledgement
+    # phone_number = input("Phone Number: ")
+    # res = send_verification_code(phone_number)
+    # print(res)
+    # code = input("code: ")
+    # print(verify_code(phone_number,code))
 
-Parameters:
-N/A
-
-Returns:
-str(resp): String
-    The user's response casted as a String
-"""
-app = Flask(__name__)
-
-@app.route("/sms", methods=['GET', 'POST'])
-def sms_reply():
-    resp = MessagingResponse()
-    resp.message("Thanks for letting us know you've received your laptop, we'll shut down the program now")
-
-    return str(resp)
-
-
-
-"""Function calls for testing"""
-# print(verify_sms())
-# print(send_sms())
-
-# phone_number = input("Phone Number: ")
-# res = send_verification_code(phone_number)
-# print(res)
-# code = input("code: ")
-# print(verify_code(phone_number,code))
-
-# Garrett's Phone Number    +19254378380
-# Ryan's Phone Number       +18582185453
-# Nick's Phone Number       +16197726699
-# Twilio Phone NUmber       +16572014198
+    # Garrett's Phone Number    +19254378380
+    # Ryan's Phone Number       +18582185453
+    # Nick's Phone Number       +16197726699
+    # Twilio Phone NUmber       +16572014198
