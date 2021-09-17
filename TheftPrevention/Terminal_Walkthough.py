@@ -53,7 +53,6 @@ def user_setup():
             opt = input('Enter your verification code: ')
         time.sleep(15)
 
-
 def main():
     try:
         args = sys.argv

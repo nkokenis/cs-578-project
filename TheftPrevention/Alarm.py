@@ -3,7 +3,6 @@ import sys
 from typing import final
 
 # Create vairable as final
-# Make sure it does not change
 COMMANDS: final = {
     "mac": "afplay mixkit-alert-alarm-1005.wav",
     "linux": "aplay mixkit-alert-alarm-1005.wav"
@@ -11,7 +10,7 @@ COMMANDS: final = {
 
 def play_alarm(operating_system):
     try:
-        # This is dangerous in testing purposes
+        #The below line sets the computer's volume to max, use with caution
         #os.system('osascript -e "set Volume 10"')
         print("System is at max volume")
         while True:

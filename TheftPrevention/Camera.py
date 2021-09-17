@@ -1,11 +1,10 @@
 import cv2
 
-#function to preview the camera
 def open_camera():
     cv2.namedWindow("preview")
     vc = cv2.VideoCapture(0)
 
-    if vc.isOpened(): # try to get the first frame
+    if vc.isOpened():
         rval, frame = vc.read()
     else:
         rval = False
@@ -14,7 +13,7 @@ def open_camera():
         cv2.imshow("preview", frame)
         rval, frame = vc.read()
         key = cv2.waitKey(20)
-        if key == 27: # exit on ESC
+        if key == 27: #Exit on ESC
             break
 
     vc.release()
