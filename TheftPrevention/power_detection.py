@@ -1,6 +1,5 @@
-from SMS import send_sms
-from SMS import verify_code
-from Alarm import play_alarm_mac
+from SMS import sms
+from Alarm import play_alarm
 from Camera import open_camera
 import sys
 import psutil
@@ -29,7 +28,7 @@ def detect_power():
             print("Running on AC Power")
             time.sleep(1)
     
-        send_sms("REPLACE WITH USER PHONE NUMBER")
+        sms.send_sms("REPLACE WITH USER PHONE NUMBER")
         open_camera()
 
         while(not psutil.sensors_battery().power_plugged):

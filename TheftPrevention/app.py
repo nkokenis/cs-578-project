@@ -1,10 +1,20 @@
 # import main Flask class and request object
 from flask import Flask, request
-from twilio.twiml.messaging_response import MessagingResponse
+# from twilio.twiml.messaging_response import MessagingResponse
 
 
 """ Create the Flask app """
 app = Flask(__name__)
+
+# allow both GET and POST requests
+@app.route('/gui-example', methods=['GET', 'POST'])
+def form_example():
+    return '''
+              <form method="POST">
+                  <div><label>Data: <input type="text" name="language"></label></div>
+                  <div><label>More Data: <input type="text" name="framework"></label></div>
+                  <input type="submit" value="Submit">
+              </form>'''
 
 """
 -> Function: update-status
@@ -35,7 +45,7 @@ Respond to the user's acknowledgement
 str(resp): String
     The user's response casted as a String
 """
-app = Flask(__name__)
+# app = Flask(__name__)
 
 @app.route("/sms", methods=['GET', 'POST'])
 def sms_reply():

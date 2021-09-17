@@ -74,9 +74,13 @@ Errors: Exception
 """
 def main():
     try:
+        print("Starting Flask Server...")
+        os.system("flask run &")
+        time.sleep(5)
+
         args = sys.argv
         if len(args) == 1:
-            print("Call terminal")
+            user_setup()
         elif len(args) == 2 and args[1] == '-g':
             print("Call GUI")
         else:
