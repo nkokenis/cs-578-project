@@ -1,21 +1,29 @@
 from Text import text
 from SMS import *
+from power_detection import main
 import traceback
 import sys
 import os
+import time
 
 class UserFailError(Exception):
+    pass
+class InvalidArguments(Exception):
+    pass
+class SystemExit(Exception):
     pass
 
 def user_setup():
     fail_count = 0
     pending = False
+    phone_number = ""
     while True:
         if not pending:
             phone_number = input('Enter your phone number: ')
         
         result = send_verification_code(phone_number)
-        
+        print(result.status)
+
         if fail_count >= 4:
             raise UserFailError
         elif result.status is None:
@@ -23,17 +31,18 @@ def user_setup():
             fail_count+=1
             print(fail_count)
         elif result.status == "pending":
+            pending = True
             print("Waiting for code to be sent...")
-            time.sleep(5)
+            time.sleep(15)
         else:
             print("Code sent.")
             break
     fail_count = 0
     opt = input('Enter your verification code: ')
     while True:
-        val = verify_code(opt)
+        val = verify_code(phone_number,opt)
         if fail_count >= 4:
-            UserFailError
+            raise UserFailError
         elif val == "approved":
             print("Approved!")
             break
@@ -42,11 +51,19 @@ def user_setup():
         else:
             print("Verification Failed please try again.")
             opt = input('Enter your verification code: ')
-        time.sleep(5)
+        time.sleep(15)
 
 
 def main():
     try:
+        args = sys.argv
+        if len(args) == 1:
+            print("Call terminal")
+        elif len(args) == 2 and args[1] == '-g':
+            print("Call GUI")
+        else:
+            raise InvalidArguments
+    
         print("\n"+text.line)
         print(text.graphic)
         print(text.line)
@@ -60,51 +77,43 @@ def main():
 
         if('y' in res):
             print("\n\nThanks for your support :)\n\nThe program is booting up...\n\n")
-
-        # elif('i' in res):
-        #     name = input("Please enter your username: ")
-        #     if check_user(name) is not None:
-        #         print("You are already authenticated")
-        #     else:
-        #         print("No authentication present")
-        #         print("\n\nNo worries, lets get you set up!\n\n")
-        #         verify_sms()
+            
         
         else:
             print("\n\nOkay lets get you {}certified!{}\n".format(text.ITALIC,text.ENDC))
             user_setup()
 
-    
+    except InvalidArguments:
+        print(text.driver_argument_error)
+        raise SystemExit
+
     except KeyboardInterrupt:
-        print("\nUser stopped program with Keybaord Interrupt.\nShutting down...")
-        try:
-            sys.exit(1)
-        except SystemExit:
-            os._exit(1)
+        print("\n\nUser stopped program with Keybaord Interrupt.\n\n")
+        raise SystemExit
+
     except NoResponseError:
-        print("There was no response from the Twilio REST API")
+        print("\n\nThere was no response from the Twilio REST API")
         print("Please try again.\n\n")
-        print("Shutting down...")
-        try:
-            sys.exit(1)
-        except SystemExit:
-            os._exit(1)
+        raise SystemExit
+
     except UserFailError:
-        tmp = "\n\nYou have failed to many times, please restart the program and try again\n"
-        print(tmp)
+        print("\n\nYou have failed to many times")
+        print("Please restart the program and try again\n\n")
+        raise SystemExit
+        
+    except SystemExit:
         print("Shutting down...")
         try:
-            sys.exit(1)
+            sys.exit(0)
         except SystemExit:
             os._exit(1)
+
     except Exception:
         print(traceback.format_exc())
         print("Shutting down...")
         try:
-            sys.exit(1)
+            sys.exit(0)
         except SystemExit:
             os._exit(1)
 
 if __name__ == "__main__": main()
-
-# 6572014198

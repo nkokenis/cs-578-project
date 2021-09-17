@@ -19,7 +19,4 @@ def play_alarm(operating_system):
             print("Playing Alarm...")
     except KeyboardInterrupt:
         print('Interrupted')
-        try:
-            sys.exit(0)
-        except SystemExit:
-            os._exit(0)
+        raise SystemExit

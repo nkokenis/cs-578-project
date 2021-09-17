@@ -21,6 +21,17 @@ class text:
 """
                     Thank you for downloading {}{}{}Theft Prevention!!!{}
 """
+    driver_argument_error=\
+"""
+Error: Invalid argumetns for program.
+
+For a text based application use:
+
+$ python driver.py
+
+For a GUI application use:
+$ python driver.py -g
+"""
 
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'

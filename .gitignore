@@ -4,6 +4,11 @@
 # Environemnt variables
 .env
 
+### Flask ###
+instance/*
+!instance/.gitignore
+.webassets-cache
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/

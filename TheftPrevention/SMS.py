@@ -1,9 +1,7 @@
-import time
-from typing import Tuple
 from decouple import config
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
-from flask import Flask, request, redirect
+from flask import Flask #, request, redirect
 from twilio.twiml.messaging_response import MessagingResponse
 
 """REST API Exception"""
@@ -18,7 +16,7 @@ class NoResponseError(Exception):
 account_sid = config('SID')
 auth_token  = config('TOKEN')
 service_sid  = config('SERVICE_SID')
-
+sms_sid = config('SMS_SID')
 
 msg=\
 """
@@ -79,19 +77,23 @@ device_sid: String
 def send_verification_code(phone_number, channel='sms'):
     try:
         verification = client.verify \
-            .services(service_sid) \
+            .services(sms_sid) \
             .verifications \
             .create(
                 to=phone_number,
-                channel=channel)
-        if verification is None:
-            raise NoResponseError
+                channel=channel,
+                status_callback="http://127.0.0.1:5000/update-status")
         return verification
-    except NoResponseError:
-        print("There was no response from Twilio")
+        # print(type(verification))
+        # if verification is None:
+        #     raise NoResponseError
+        # return verification
+    # except NoResponseError:
+    #     print("There was no response from Twilio")
 
-    except TwilioRestException:
+    except TwilioRestException as e:
         print("There was an error verifying the phone number")
+        print(e)
 
 
 """
@@ -109,13 +111,13 @@ Returns
 status: String
     Status of verification
 """
-def verify_code(code):
+def verify_code(phone_number,code):
     try:
         verification_check = client.verify \
-            .services(service_sid) \
+            .services(sms_sid) \
             .verification_checks \
-            .create(to='+19254378380', code=code)
-        return verification_check.status
+            .create(to=phone_number, code=code)
+        return verification_check
 
     except TwilioRestException as e:
         tmp = "There was an error verifying the confirmation code"
@@ -162,6 +164,13 @@ def sms_reply():
 # print(verify_sms())
 # print(send_sms())
 
+# phone_number = input("Phone Number: ")
+# res = send_verification_code(phone_number)
+# print(res)
+# code = input("code: ")
+# print(verify_code(phone_number,code))
+
 # Garrett's Phone Number    +19254378380
 # Ryan's Phone Number       +18582185453
 # Nick's Phone Number       +16197726699
+# Twilio Phone NUmber       +16572014198

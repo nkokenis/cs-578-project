@@ -1,4 +1,3 @@
-from TheftPrevention.Camera import open_camera
 from SMS import send_sms
 from SMS import verify_sms
 from Alarm import play_alarm_mac
@@ -8,24 +7,22 @@ import psutil
 import time
 
 
-def detect_power():
+def detect_power(phone_number):
+    os = sys.platform()
+    print(os)
     battery = psutil.sensors_battery()
     if(battery is None):
         print("This device does not have a battery. Exiting...")
         sys.exit(1)
-
-    #need to dynamically verify the user's phone number before using it to send sms
-    verify_sms()
     
     while(True):
-        battery = psutil.sensors_battery()
 
         while(psutil.sensors_battery().power_plugged):
             print("Running on AC Power")
             time.sleep(1)
     
-        send_sms("REPLACE WITH USER PHONE NUMBER")
-        open_camera()
+        # send_sms("REPLACE WITH USER PHONE NUMBER")
+        # open_camera()
 
         while(not psutil.sensors_battery().power_plugged):
             print("Running on Battery Power")
@@ -33,7 +30,7 @@ def detect_power():
 
     
 
-# Press the green button in the GUI to run the script.
+# # Press the green button in the GUI to run the script.
 if __name__ == '__main__':
     detect_power()
 
