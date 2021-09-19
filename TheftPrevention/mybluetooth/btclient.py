@@ -36,7 +36,7 @@ class BTClient:
             for func in self.data_received_listeners:
                 func(data)
 
-        self.client_sock.close()
+        self.sock.close()
 
     def addDataRecvListener(self, func):
         self.data_received_listeners.append(func)
@@ -46,6 +46,11 @@ class BTClient:
 
     def disconnect(self):
         self.connected = False
+
+
+######################
+#### EXAMPLE CODE ####
+######################
 
 def data_received(data):
     print(data)
@@ -58,6 +63,9 @@ if __name__ == '__main__':
 
     while True:
         data = input("data: ")
-        if data != "exit()":
+        if data == b"exit()":
             break
+        elif data == b"close()":
+            client.disconnect()
+
         client.send_data(data)

@@ -50,8 +50,14 @@ class BTServer:
     def disconnect(self):
         self.connected = False
 
+
+######################
+#### EXAMPLE CODE ####
+######################
+
 def data_received(data):
     print(data)
+
 
 if __name__ == '__main__':
     print("BT server waiting for client")
@@ -59,4 +65,11 @@ if __name__ == '__main__':
     print("BT server established connection")
     server.addDataRecvListener(data_received)
 
-    input()
+    while True:
+        data = input("data: ")
+        if data == b"exit()":
+            break
+        elif data == b"close()":
+            server.disconnect()
+
+        server.send_data(data)
