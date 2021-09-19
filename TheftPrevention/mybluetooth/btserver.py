@@ -6,19 +6,19 @@ import bluetooth
 
 class BTServer:
     def __init__(self, uuid='e4399be5-b392-4490-a842-cc5abce72cb9'):
-        server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-        server_sock.bind(("", bluetooth.PORT_ANY))
-        server_sock.listen(1)
+        self.server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+        self.server_sock.bind(("", bluetooth.PORT_ANY))
+        self.server_sock.listen(1)
 
-        port = server_sock.getsockname()[1]
+        port = self.server_sock.getsockname()[1]
 
-        bluetooth.advertise_service(server_sock, "AntiTheftServer", service_id=uuid,
+        bluetooth.advertise_service(self.server_sock, "AntiTheftServer", service_id=uuid,
                                     service_classes=[uuid, bluetooth.SERIAL_PORT_CLASS],
                                     profiles=[bluetooth.SERIAL_PORT_PROFILE],
                                     # protocols=[bluetooth.OBEX_UUID]
                                     )
 
-        self.client_sock, self.client_info = server_sock.accept()
+        self.client_sock, self.client_info = self.server_sock.accept()
         self.connected = True
 
         self.data_received_listeners = []
@@ -30,14 +30,17 @@ class BTServer:
         self.client_sock.send(data)
 
     def __recv_data(self):
-        while self.connected:
-            data = self.client_sock.recv(1024)
-            if data == b'':
-                self.connected = False
-            for func in self.data_received_listeners:
-                func(data)
+        try:
+            while self.connected:
+                data = self.client_sock.recv(1024)
+                if data == b'':
+                    self.connected = False
+                for func in self.data_received_listeners:
+                    func(data)
 
-        self.client_sock.close()
+            self.client_sock.close()
+        except OSError:
+            pass
 
     def addDataRecvListener(self, func):
         self.data_received_listeners.append(func)
@@ -47,6 +50,14 @@ class BTServer:
 
     def disconnect(self):
         self.connected = False
+        try:
+            self.client_sock.close()
+            self.server_sock.close()
+        except OSError:
+            pass
+        
+    def isConnected(self):
+        return self.connected
 
 
 ######################
@@ -64,10 +75,11 @@ if __name__ == '__main__':
     server.addDataRecvListener(data_received)
 
     while True:
-        data = input("data: ")
-        if data == b"exit()":
+        data = input()
+        if data == "exit()":
             break
-        elif data == b"close()":
+        elif data == "close()":
             server.disconnect()
+            break
 
         server.send_data(data)

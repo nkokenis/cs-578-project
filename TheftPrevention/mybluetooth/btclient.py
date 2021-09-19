@@ -29,14 +29,17 @@ class BTClient:
         self.sock.send(data)
 
     def __recv_data(self):
-        while self.connected:
-            data = self.sock.recv(1024)
-            if data == b'':
-                self.connected = False
-            for func in self.data_received_listeners:
-                func(data)
+        try:
+            while self.connected:
+                data = self.sock.recv(1024)
+                if data == b'':
+                    self.connected = False
+                for func in self.data_received_listeners:
+                    func(data)
 
-        self.sock.close()
+            self.sock.close()
+        except OSError: # thrown when socket closes
+            pass
 
     def addDataRecvListener(self, func):
         self.data_received_listeners.append(func)
@@ -46,6 +49,13 @@ class BTClient:
 
     def disconnect(self):
         self.connected = False
+        try:
+            self.sock.close()
+        except OSError:
+            pass
+
+    def isConnected(self):
+        return self.connected
 
 
 ######################
@@ -62,10 +72,11 @@ if __name__ == '__main__':
     client.addDataRecvListener(data_received)
 
     while True:
-        data = input("data: ")
-        if data == b"exit()":
+        data = input()
+        if data == "exit()":
             break
-        elif data == b"close()":
+        elif data == "close()":
             client.disconnect()
+            break
 
         client.send_data(data)
