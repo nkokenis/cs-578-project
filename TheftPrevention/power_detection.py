@@ -13,13 +13,12 @@ class AC_Adapter:
     Ex:
         See below class
     """
-    plugged_listeners = []
-    unplugged_listeners = []
-    thread = None
-    stop = False
 
     def __init__(self):
-        pass
+        self.plugged_listeners = []
+        self.unplugged_listeners = []
+        self.thread = None
+        self.stop = False
 
     def addUnpluggedListener(self, func):
         self.unplugged_listeners.append(func)

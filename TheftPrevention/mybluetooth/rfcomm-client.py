@@ -23,7 +23,7 @@ else:
     print("Searching for SampleServer on {}...".format(addr))
 
 # search for the SampleServer service
-uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
+uuid = 'e4399be5-b392-4490-a842-cc5abce72cb9'
 service_matches = bluetooth.find_service(uuid=uuid, address=addr)
 
 if len(service_matches) == 0:
