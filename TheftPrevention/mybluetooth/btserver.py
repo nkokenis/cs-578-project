@@ -5,9 +5,7 @@ import bluetooth
 
 
 class BTServer:
-    #uuid = 'e4399be5-b392-4490-a842-cc5abce72cb9'
-    uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
-    def __init__(self, uuid="94f39d29-7d6d-437d-973b-fba39e49d4ee"):
+    def __init__(self, uuid='e4399be5-b392-4490-a842-cc5abce72cb9'):
         server_sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
         server_sock.bind(("", bluetooth.PORT_ANY))
         server_sock.listen(1)
