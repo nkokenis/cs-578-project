@@ -17,7 +17,7 @@ def capture():
     """
     cam = cv2.VideoCapture(0)
     accessed, img = cam.read()  # FORMAT: bool, Image obj
-    file_name = datetime.now().strftime('%m_%d_%Y_%H:%M:%S.png')  # Timestamp
+    file_name = datetime.now().strftime('%m_%d_%Y_%H_%M_%S.png')  # Timestamp
 
     if not accessed:
         return None  # camera can't be accessed
