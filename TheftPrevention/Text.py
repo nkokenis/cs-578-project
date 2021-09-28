@@ -1,5 +1,8 @@
+from logging import shutdown
+
+
 class text:
-    
+    turn_off = "Shutting down..."
     line =\
     "--------------------------------------------------------------------------------"
     graphic=\
