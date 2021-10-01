@@ -5,6 +5,7 @@ import traceback
 from Text import text
 import SMS
 import user_setup
+import power_detection
 
 """ User defined Errors """
 class UserFailError(Exception):
@@ -23,6 +24,8 @@ def intro_text():
     print("Lets get you setup so you can be ",end="")
     print("{}{}PROTECTED{}"\
         .format(text.CGREEN2,text.BOLD,text.ENDC))
+
+    # If cache exists, ask if they want same phone number
     
     res = input("\n\nHave you already setup an account with Theft Prevention before? [yes or no]: ")
     res = res.lower()
@@ -32,6 +35,15 @@ def intro_text():
     else:
         print("\n\nOkay lets get you {}certified!{}\n".format(text.ITALIC,text.ENDC))
         user_setup.verify()
+    
+    adapter = power_detection.AC_Adapter()
+    adapter.addUnpluggedListener(power_detection.take_photo)
+    adapter.addUnpluggedListener(power_detection.send_sms)
+    success = adapter.listen()
+
+    if not success:
+        print("Device does not have battery. Exiting...")
+        sys.exit(1)
 
 """
 -> Function: main

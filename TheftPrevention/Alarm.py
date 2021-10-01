@@ -14,7 +14,7 @@ def play_alarm(operating_system):
         #os.system('osascript -e "set Volume 10"')
         print("System is at max volume")
         while True:
-            os.system(COMMANDS[operating_system])
+            # os.system(COMMANDS[operating_system])
             print("Playing Alarm...")
     except KeyboardInterrupt:
         print('Interrupted')

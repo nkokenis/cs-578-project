@@ -1,5 +1,5 @@
 from flask import Flask, request
-from twilio.twiml.messaging_response import MessagingResponse
+# from twilio.twiml.messaging_response import MessagingResponse
 
 class API:
 
@@ -51,11 +51,11 @@ Respond to the user's acknowledgement
 str(resp): String
     The user's response casted as a String
 """
-@app.route("/sms", methods=['GET', 'POST'])
-def sms_reply():
-    resp = MessagingResponse()
-    resp.message("Thanks for letting us know you've received your laptop, we'll shut down the program now")
-    return str(resp)
+# @app.route("/sms", methods=['GET', 'POST'])
+# def sms_reply():
+#     resp = MessagingResponse()
+#     resp.message("Thanks for letting us know you've received your laptop, we'll shut down the program now")
+#     return str(resp)
 
 
 """ Flask Application Start """

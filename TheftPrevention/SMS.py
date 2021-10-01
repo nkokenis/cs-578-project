@@ -1,3 +1,4 @@
+from os import error
 from decouple import config
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
@@ -78,7 +79,8 @@ def send_verification_code(phone_number, channel='sms'):
             .verifications \
             .create(
                 to=phone_number,
-                channel=channel)
+                channel=channel
+            )
                 #status_callback="http://127.0.0.1:5000/update-status")
             
         return res.sid
@@ -146,6 +148,21 @@ def verify_code(phone_number,code):
     except TwilioRestException as e:
         tmp = "There was an error verifying the confirmation code\n\n"
         print(tmp)
+        print(e)
+
+def get_verified_numbers():
+    return client.outgoing_caller_ids.list(limit=100)
+
+def add_verified_number(phone_number, name):
+    try:
+        validation_request = client.validation_requests \
+            .create(
+                    friendly_name=name,
+                    phone_number=phone_number
+                )
+        return validation_request.friendly_name
+
+    except TwilioRestException as e:
         print(e)
 
 

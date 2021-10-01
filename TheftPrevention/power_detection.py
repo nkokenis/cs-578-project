@@ -1,8 +1,15 @@
+from logging import error
+import os
 import sys
-import threading
-
-import psutil
 import time
+import json
+import psutil
+import threading
+from SMS import send_sms as send
+
+
+class Invalid_Phone_Number(Exception):
+    pass
 
 
 class AC_Adapter:
@@ -13,12 +20,13 @@ class AC_Adapter:
     Ex:
         See below class
     """
-
     def __init__(self):
         self.plugged_listeners = []
         self.unplugged_listeners = []
         self.thread = None
         self.stop = False
+        
+
 
     def addUnpluggedListener(self, func):
         self.unplugged_listeners.append(func)
@@ -53,6 +61,9 @@ class AC_Adapter:
         desc: Ends AC adapter plug detection
         """
         self.stop = True
+    
+    
+    
 
     def __listen(self):
         """
@@ -67,6 +78,7 @@ class AC_Adapter:
                 time.sleep(1)
 
             for func in self.unplugged_listeners:
+                print(func)
                 func()
 
             while not psutil.sensors_battery().power_plugged:
@@ -86,9 +98,21 @@ class AC_Adapter:
 def take_photo():
     print("Took photo")
 
-
 def send_sms():
-    print("sent sms")
+    phone_number = None
+    json_file = 'cache.json'
+
+    # Set global phone_number variable
+    if os.path.exists(json_file):
+        json_decoded = None
+        with open(json_file) as json_file:
+            json_decoded = json.load(json_file)
+        
+        if not json_decoded["phone_number"]:
+            raise Invalid_Phone_Number("User has not set up a phone number")
+    
+        phone_number = json_decoded["phone_number"]
+    send(phone_number)
 
 
 if __name__ == '__main__':

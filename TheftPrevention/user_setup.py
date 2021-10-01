@@ -1,7 +1,28 @@
 import time
+import json
 import SMS as sms
-import update_cache
+import update_cache as up
 from driver import UserFailError
+
+
+def get_nums():
+    nums = []
+    res = sms.get_verified_numbers()
+    ids = json.dumps(res)
+    for item in ids['outgoing_caller_ids']:
+        nums.append(item['phone_number'])
+    return nums
+
+def add_name():
+    while True:
+        name = input("Please add a name so we know who this phone number belongs to: ")
+        name2 = input("Entry your name again to verify its correct: ")
+        if name == name2:
+            up.update_cache("name",name)
+            print("Thanks {}!".format(name))
+            return name
+        else:
+            print("Sorry, those didn't match, try again.")
 
 """
 -> Function: check_status
@@ -52,9 +73,18 @@ def verify():
             raise UserFailError
 
         phone_number = input('Enter your phone number: ')
+
+        # nums = get_nums()
+        
+        # if phone_number in nums:
+        #     print("Your number is already verified!\n")
+        #     print("Starting program with {}".format(phone_number))
+        #     break
+
         sid = sms.send_verification_code(phone_number,'sms')
 
-        update_cache("verification_sid",sid)
+        
+        up.update_cache("verification_sid",sid)
 
         print("Sending code...")
         time.sleep(3)
@@ -62,6 +92,9 @@ def verify():
         approved, fail_count = check_status(phone_number,fail_count)
         if approved:
             print("Approved!")
+            name = add_name()
+            up.update_cache("phone_number",phone_number)
+            sms.add_verified_number(phone_number, name)
             break
         elif not approved:
             print("The verification period timed out. Please try again.")
