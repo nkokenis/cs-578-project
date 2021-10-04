@@ -3,6 +3,10 @@ import time
 import platform
 import psutil
 import threading
+from cache import access_cache
+from Webcam import capture
+from SMS import send_sms as send
+#from Alarm import play_alarm as alarm
 
 class AC_Adapter:
     """
@@ -86,10 +90,10 @@ class AC_Adapter:
 #######################
 def detect_os():
     return platform.system().lower()
-
+'''
 def play_alarm():
     alarm(detect_os())
-
+'''
 def take_photo():
     capture()
 

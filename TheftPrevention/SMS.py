@@ -1,5 +1,5 @@
 from os import error
-from decouple import config
+from decouple import config # pip python-decouple
 from twilio.rest import Client
 from twilio.base.exceptions import TwilioRestException
 

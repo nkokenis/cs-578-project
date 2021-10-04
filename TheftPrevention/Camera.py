@@ -1,4 +1,4 @@
-import cv2
+import cv2 # opencv-python
 
 def open_camera():
     cv2.namedWindow("preview")
