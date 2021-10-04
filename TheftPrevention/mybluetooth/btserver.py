@@ -1,7 +1,6 @@
 import sys
 import threading
-
-import bluetooth
+import bluetooth # pip pybluez22
 
 
 class BTServer:
