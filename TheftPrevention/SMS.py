@@ -48,6 +48,7 @@ def send_sms(phone_number):
         from_="+16572014198",
         body=msg
     )
+    print("SMS successfully sent.")
     return message.sid
 
 """

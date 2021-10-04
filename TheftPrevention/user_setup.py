@@ -1,14 +1,15 @@
 import time
 import json
 import SMS as sms
-import update_cache as up
+import cache as up
 from driver import UserFailError
 
 
 def get_nums():
     nums = []
     res = sms.get_verified_numbers()
-    ids = json.dumps(res)
+    print(res)
+    ids = json.loads(res)
     for item in ids['outgoing_caller_ids']:
         nums.append(item['phone_number'])
     return nums
@@ -19,7 +20,7 @@ def add_name():
         name2 = input("Entry your name again to verify its correct: ")
         if name == name2:
             up.update_cache("name",name)
-            print("Thanks {}!".format(name))
+            print("Thanks {}!\n\n".format(name))
             return name
         else:
             print("Sorry, those didn't match, try again.")
@@ -75,6 +76,7 @@ def verify():
         phone_number = input('Enter your phone number: ')
 
         # nums = get_nums()
+        # print(nums)
         
         # if phone_number in nums:
         #     print("Your number is already verified!\n")

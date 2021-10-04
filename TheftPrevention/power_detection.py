@@ -1,16 +1,12 @@
-from logging import error
-import os
 import sys
 import time
-import json
+import platform
 import psutil
 import threading
+from cache import access_cache
+from Webcam import capture
 from SMS import send_sms as send
-
-
-class Invalid_Phone_Number(Exception):
-    pass
-
+from Alarm import play_alarm as alarm
 
 class AC_Adapter:
     """
@@ -27,7 +23,6 @@ class AC_Adapter:
         self.stop = False
         
 
-
     def addUnpluggedListener(self, func):
         self.unplugged_listeners.append(func)
 
@@ -39,6 +34,7 @@ class AC_Adapter:
 
     def removePluggedListener(self, func):
         self.plugged_listeners.remove(func)
+
 
     def listen(self):
         """
@@ -55,6 +51,7 @@ class AC_Adapter:
         self.thread.start()
 
         return True
+        
 
     def stop_listening(self):
         """
@@ -63,8 +60,6 @@ class AC_Adapter:
         self.stop = True
     
     
-    
-
     def __listen(self):
         """
         desc: Private helper function for listen.
@@ -78,7 +73,6 @@ class AC_Adapter:
                 time.sleep(1)
 
             for func in self.unplugged_listeners:
-                print(func)
                 func()
 
             while not psutil.sensors_battery().power_plugged:
@@ -90,33 +84,29 @@ class AC_Adapter:
             for func in self.plugged_listeners:
                 func()
 
-######################
-#### EXAMPLE CODE ####
-######################
 
+#######################
+#### Functionality ####
+#######################
+def detect_os():
+    return platform.system().lower()
+
+def play_alarm():
+    alarm(detect_os())
 
 def take_photo():
-    print("Took photo")
+    capture()
 
 def send_sms():
-    phone_number = None
-    json_file = 'cache.json'
-
-    # Set global phone_number variable
-    if os.path.exists(json_file):
-        json_decoded = None
-        with open(json_file) as json_file:
-            json_decoded = json.load(json_file)
-        
-        if not json_decoded["phone_number"]:
-            raise Invalid_Phone_Number("User has not set up a phone number")
-    
-        phone_number = json_decoded["phone_number"]
-    send(phone_number)
+    send(access_cache("phone_number"))
 
 
+###############
+## Test File ##
+###############
 if __name__ == '__main__':
     adapter = AC_Adapter()
+    adapter.addUnpluggedListener(play_alarm)
     adapter.addUnpluggedListener(take_photo)
     adapter.addUnpluggedListener(send_sms)
 
@@ -125,5 +115,3 @@ if __name__ == '__main__':
     if not success:
         print("Device does not have battery. Exiting...")
         sys.exit(1)
-
-    input()

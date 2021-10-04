@@ -4,6 +4,9 @@
 # Environemnt variables
 .env
 
+## Pictures on local device ##
+*.png
+
 ### Flask ###
 instance/*
 !instance/.gitignore

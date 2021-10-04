@@ -1,11 +1,11 @@
-import sys
 import os
-import time
-import traceback
-from Text import text
+import sys
 import SMS
+import traceback
 import user_setup
+from Text import text
 import power_detection
+from cache import access_cache
 
 """ User defined Errors """
 class UserFailError(Exception):
@@ -15,35 +15,21 @@ class InvalidArguments(Exception):
 class SystemExit(Exception):
     pass
 
-""" Terminal Greeting """
-def intro_text():
+""" Graphic """
+def print_graphic():
     print("\n"+text.line)
     print(text.graphic)
-    print(text.line)
+    print(text.line+"\n")
+    
+
+""" Terminal Greeting """
+def intro_text():
     print(text.msg.format(text.ITALIC,text.CGREEN2,text.BOLD,text.ENDC))
     print("Lets get you setup so you can be ",end="")
-    print("{}{}PROTECTED{}"\
+    print("{}{}PROTECTED{}\n\n"\
         .format(text.CGREEN2,text.BOLD,text.ENDC))
-
-    # If cache exists, ask if they want same phone number
+    user_setup.verify()
     
-    res = input("\n\nHave you already setup an account with Theft Prevention before? [yes or no]: ")
-    res = res.lower()
-
-    if('y' in res):
-        print("\n\nThanks for your support :)\n\nThe program is booting up...\n\n")
-    else:
-        print("\n\nOkay lets get you {}certified!{}\n".format(text.ITALIC,text.ENDC))
-        user_setup.verify()
-    
-    adapter = power_detection.AC_Adapter()
-    adapter.addUnpluggedListener(power_detection.take_photo)
-    adapter.addUnpluggedListener(power_detection.send_sms)
-    success = adapter.listen()
-
-    if not success:
-        print("Device does not have battery. Exiting...")
-        sys.exit(1)
 
 """
 -> Function: main
@@ -58,16 +44,46 @@ Errors: Exception
 def main():
     try:
         print("Starting Flask Server...")
-        os.system("python app.py &")
-        time.sleep(5)
-        
+        # os.system("python app.py &")
+        # time.sleep(3)
+        print_graphic()
         args = sys.argv
+        version = None
         if len(args) == 1:
-            intro_text()
+            version = "text"
         elif len(args) == 2 and args[1] == '-g':
-            print("Call GUI")
+            version = "gui"
         else:
             raise InvalidArguments
+
+        quick_start = access_cache("phone_number")
+        name = access_cache("name")
+
+        if quick_start is None or name is None and version == "text":
+            intro_text()
+        elif quick_start is None or name is None and version == "gui":
+            print("call gui")
+        else:
+            msg = "\n\nHello {}! run program with phone number: {}? [yes] or [no]: ".format(name, quick_start)
+            res = input(msg)
+            res.lower()
+            if "n" in res:
+                intro_text()
+            else:
+                print(text.welcome)
+        
+        print("The program is booting up...\n\n")
+        
+        adapter = power_detection.AC_Adapter()
+        adapter.addUnpluggedListener(power_detection.play_alarm)
+        adapter.addUnpluggedListener(power_detection.take_photo)
+        adapter.addUnpluggedListener(power_detection.send_sms)
+        
+        success = adapter.listen()
+
+        if not success:
+            print("Device does not have battery. Exiting...")
+            sys.exit(1)
     
     except InvalidArguments:
         print(text.driver_argument_error)

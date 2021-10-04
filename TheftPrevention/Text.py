@@ -2,6 +2,7 @@ from logging import shutdown
 
 
 class text:
+    welcome = "\n\nThanks for your support :)\n\n"
     turn_off = "Shutting down..."
     line =\
     "--------------------------------------------------------------------------------"
@@ -107,3 +108,11 @@ Your device has been DISCONNECTED!
                 colors = colors + "\33[" + code + "m\\33[" + code + "m\033[0m "
             print(colors)
             x = x + 5
+
+    # res = input("\n\nHave you already setup an account with Theft Prevention before? [yes or no]: ")
+    # res = res.lower()
+
+    # if('y' in res):
+    #     print(text.welcome)
+    # else:
+    #   print("\n\nOkay lets get you {}certified!{}\n".format(text.ITALIC,text.ENDC))
