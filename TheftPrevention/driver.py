@@ -75,7 +75,7 @@ def main():
         print("The program is booting up...\n\n")
         
         adapter = power_detection.AC_Adapter()
-        #adapter.addUnpluggedListener(power_detection.play_alarm)
+        adapter.addUnpluggedListener(power_detection.play_alarm)
         adapter.addUnpluggedListener(power_detection.take_photo)
         adapter.addUnpluggedListener(power_detection.send_sms)
         

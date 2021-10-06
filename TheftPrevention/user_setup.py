@@ -4,7 +4,6 @@ import SMS as sms
 import cache as up
 from driver import UserFailError
 
-
 def get_nums():
     nums = []
     res = sms.get_verified_numbers()
