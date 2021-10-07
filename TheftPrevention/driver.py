@@ -1,10 +1,12 @@
 import os
 import sys
-import SMS
 import traceback
 import user_setup
 from Text import text
 import power_detection
+import Webcam
+import SMS
+import Alarm
 from cache import access_cache
 from mybluetooth import btclient
 
@@ -16,12 +18,13 @@ class InvalidArguments(Exception):
 class SystemExit(Exception):
     pass
 
+
 """ Graphic """
 def print_graphic():
     print("\n"+text.line)
     print(text.graphic)
     print(text.line+"\n")
-    
+
 
 """ Terminal Greeting """
 def intro_text():
@@ -70,16 +73,17 @@ def main():
             if "n" in res:
                 intro_text()
 
-        # @author: Ryan
+        # desc: setup bluetooth
+        # author: Ryan
         res = input("Would you like to setup pi node? [yes] or [no]:").lower()
         if 'y' in res:
             bluetooth_client = btclient.BTClient()
 
-            bluetooth_client.start()
             bluetooth_client.add_disconnect_listener(lambda: print("Bluetooth disconnected."))
+            bluetooth_client.start()
             print("Waiting for bluetooth to connected to security node.")
             bluetooth_client.wait_for_connection()
-            print("Bluetooth connected to security node.\n")
+            print("Bluetooth connected to pi node.\n")
             bluetooth_client.send_data(("#", quick_start))
 
         print(text.welcome)
@@ -87,13 +91,13 @@ def main():
         print("The program is booting up...\n\n")
         
         adapter = power_detection.AC_Adapter()
-        adapter.addUnpluggedListener(power_detection.play_alarm)
-        adapter.addUnpluggedListener(power_detection.take_photo)
-        adapter.addUnpluggedListener(power_detection.send_sms)
+        adapter.addUnpluggedListener(SMS.send_sms)
+        adapter.addUnpluggedListener(Alarm.play_alarm)
+        adapter.addUnpluggedListener(Webcam.capture)
         
-        success = adapter.listen()
+        has_battery = adapter.listen()
 
-        if not success:
+        if not has_battery:
             print("Device does not have battery. Exiting...")
             sys.exit(1)
     
@@ -141,5 +145,3 @@ def main():
     except Exception:
         print(traceback.format_exc())
         os._exit(1)
-
-if __name__ == "__main__": main()

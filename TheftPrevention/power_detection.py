@@ -1,12 +1,13 @@
 import sys
 import time
-import platform
 import psutil
 import threading
+
 from cache import access_cache
 from Webcam import capture
-from SMS import send_sms as send
-from Alarm import play_alarm as alarm
+from SMS import send_sms
+from Alarm import play_alarm
+
 
 class AC_Adapter:
     """
@@ -21,7 +22,6 @@ class AC_Adapter:
         self.unplugged_listeners = []
         self.thread = None
         self.stop = False
-        
 
     def addUnpluggedListener(self, func):
         self.unplugged_listeners.append(func)
@@ -51,15 +51,13 @@ class AC_Adapter:
         self.thread.start()
 
         return True
-        
 
     def stop_listening(self):
         """
         desc: Ends AC adapter plug detection
         """
         self.stop = True
-    
-    
+
     def __listen(self):
         """
         desc: Private helper function for listen.
@@ -85,30 +83,14 @@ class AC_Adapter:
                 func()
 
 
-#######################
-#### Functionality ####
-#######################
-def detect_os():
-    return platform.system().lower()
-
-def play_alarm():
-    alarm(detect_os())
-
-def take_photo():
-    capture()
-
-def send_sms():
-    send(access_cache("phone_number"))
-
-
 ###############
 ## Test File ##
 ###############
 if __name__ == '__main__':
     adapter = AC_Adapter()
     adapter.addUnpluggedListener(play_alarm)
-    adapter.addUnpluggedListener(take_photo)
-    adapter.addUnpluggedListener(send_sms)
+    adapter.addUnpluggedListener(capture)
+    adapter.addUnpluggedListener(send_sms(access_cache("phone_number")))
 
     success = adapter.listen()
 

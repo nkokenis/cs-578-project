@@ -1,4 +1,5 @@
 import os
+import platform
 
 # Create vairable as final
 COMMANDS = {
@@ -7,7 +8,7 @@ COMMANDS = {
     "windows": "start mixkit-alert-alarm-1005.wav"
 }
 
-def play_alarm(operating_system):
+def play_alarm():
     try:
         print("playing alarm")
         #The below line sets the computer's volume to max, use with caution
@@ -17,7 +18,7 @@ def play_alarm(operating_system):
         ADDING LOOP HERE DOES NOT ALLOW FOR CTRL+C commands to stop program
         """
         print("System is at max volume")
-        os.system(COMMANDS[operating_system])
+        os.system(COMMANDS[platform.system().lower()])
         print("Playing Alarm...")
     except KeyboardInterrupt:
         print('Interrupted')
