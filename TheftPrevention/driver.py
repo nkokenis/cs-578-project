@@ -31,16 +31,6 @@ def intro_text():
         .format(text.CGREEN2,text.BOLD,text.ENDC))
     user_setup.verify()
 
-def handle_bt_data(data):
-    data_tuple = (tuple) data
-    case = str(data_tuple[0])
-    value = data_tuple[1]
-    if case == "msg":
-        print(value)
-    elif case == "phone#":
-        pass
-    
-
 """
 -> Function: main
 main driver of the program
@@ -86,15 +76,14 @@ def main():
             bluetooth_client = btclient.BTClient()
 
             bluetooth_client.start()
-            bluetooth_client.add_data_recv_listener(handle_bt_data)
             bluetooth_client.add_disconnect_listener(lambda: print("Bluetooth disconnected."))
+            print("Waiting for bluetooth to connected to security node.")
             bluetooth_client.wait_for_connection()
-            print("Bluetooth connected to security node.")
-
+            print("Bluetooth connected to security node.\n")
+            bluetooth_client.send_data(("#", quick_start))
 
         print(text.welcome)
 
-        
         print("The program is booting up...\n\n")
         
         adapter = power_detection.AC_Adapter()

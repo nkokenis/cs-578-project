@@ -89,12 +89,11 @@ class BTClient:
         try:
             while True:
                 data = self.sock.recv(1024)
+                if data == b'':
+                    break
                 deserialized_data = pickle.loads(data)
                 for func in self.data_received_listeners:
                     func(deserialized_data)
-                if data == b'':
-                    break
-
         except OSError:
             pass
         finally:

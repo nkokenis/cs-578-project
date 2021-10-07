@@ -4,7 +4,7 @@ or pickled bytes
 
 Anthony Norderhaug, CS-578-01, Group 10
 """
-import cv2
+import cv2 # pip install opencv-python
 import pickle
 import traceback
 from datetime import datetime
