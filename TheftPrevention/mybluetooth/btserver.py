@@ -1,7 +1,7 @@
 import sys
 import threading
 import bluetooth # pip pybluez22
-
+import pickle
 
 class BTServer:
     def __init__(self, uuid='e4399be5-b392-4490-a842-cc5abce72cb9'):
@@ -39,7 +39,8 @@ class BTServer:
             self.lock.release()
 
     def send_data(self, data):
-        self.client_sock.send(data)
+        serialized_data = pickle.dumps(data)
+        self.client_sock.send(serialized_data)
         
     def __accpet_connections(self):
         while self.online:
@@ -66,8 +67,9 @@ class BTServer:
         try:
             while self.online:
                 data = self.client_sock.recv(1024)
+                deserialized_data = pickle.loads(data)
                 for func in self.data_received_listeners:
-                    func(data)
+                    func(deserialized_data)
                 if data == b'':
                     break
 

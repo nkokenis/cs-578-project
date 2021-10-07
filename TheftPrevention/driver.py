@@ -6,6 +6,7 @@ import user_setup
 from Text import text
 import power_detection
 from cache import access_cache
+from mybluetooth import btclient
 
 """ User defined Errors """
 class UserFailError(Exception):
@@ -29,6 +30,15 @@ def intro_text():
     print("{}{}PROTECTED{}\n\n"\
         .format(text.CGREEN2,text.BOLD,text.ENDC))
     user_setup.verify()
+
+def handle_bt_data(data):
+    data_tuple = (tuple) data
+    case = str(data_tuple[0])
+    value = data_tuple[1]
+    if case == "msg":
+        print(value)
+    elif case == "phone#":
+        pass
     
 
 """
@@ -69,8 +79,21 @@ def main():
             res.lower()
             if "n" in res:
                 intro_text()
-            else:
-                print(text.welcome)
+
+        # @author: Ryan
+        res = input("Would you like to setup pi node? [yes] or [no]:").lower()
+        if 'y' in res:
+            bluetooth_client = btclient.BTClient()
+
+            bluetooth_client.start()
+            bluetooth_client.add_data_recv_listener(handle_bt_data)
+            bluetooth_client.add_disconnect_listener(lambda: print("Bluetooth disconnected."))
+            bluetooth_client.wait_for_connection()
+            print("Bluetooth connected to security node.")
+
+
+        print(text.welcome)
+
         
         print("The program is booting up...\n\n")
         

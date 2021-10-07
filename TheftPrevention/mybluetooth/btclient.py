@@ -1,4 +1,5 @@
 import sys
+import pickle
 import threading
 import bluetooth # pip pybluez22
 
@@ -32,7 +33,8 @@ class BTClient:
                 raise RuntimeError("Couldn't establish Bluetooth connection.")
 
     def send_data(self, data):
-        self.sock.send(data)
+        serialized_data = pickle.dumps(data)
+        self.sock.send(serialized_data)
         
     def __accpet_connections(self):
         while True:
@@ -87,8 +89,9 @@ class BTClient:
         try:
             while True:
                 data = self.sock.recv(1024)
+                deserialized_data = pickle.loads(data)
                 for func in self.data_received_listeners:
-                    func(data)
+                    func(deserialized_data)
                 if data == b'':
                     break
 
