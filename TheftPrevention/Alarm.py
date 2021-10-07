@@ -4,7 +4,7 @@ import os
 COMMANDS = {
     "darwin": "afplay mixkit-alert-alarm-1005.wav",
     "linux": "aplay mixkit-alert-alarm-1005.wav",
-    "windows": "start C:/mixkit-alert-alarm-1005.wav"
+    "windows": "start mixkit-alert-alarm-1005.wav"
 }
 
 def play_alarm(operating_system):
