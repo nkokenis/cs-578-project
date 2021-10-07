@@ -71,9 +71,10 @@ class BTServer:
                 if data == b'':
                     break
 
-            self.disconnect_client()
         except OSError:
             pass
+        finally:
+            self.disconnect_client()
 
     def add_data_recv_listener(self, func):
         self.data_received_listeners.append(func)
