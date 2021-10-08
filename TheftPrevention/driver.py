@@ -1,5 +1,7 @@
 import os
 import sys
+import signal
+import time
 import traceback
 import user_setup
 from Text import text
@@ -34,6 +36,10 @@ def intro_text():
         .format(text.CGREEN2,text.BOLD,text.ENDC))
     user_setup.verify()
 
+
+def send_sms():
+    SMS.send_sms(access_cache("phone_number"))
+
 """
 -> Function: main
 main driver of the program
@@ -44,7 +50,14 @@ N/A
 Errors: Exception
     Any errors occured
 """
-def main():
+def signal_handler(sig, frame):
+    sys.exit(1)
+
+bluetooth_client = None
+
+if __name__ == "__main__":
+    signal.signal(signal.SIGINT, signal_handler)
+
     try:
         print("Starting Flask Server...")
         # os.system("python app.py &")
@@ -84,14 +97,15 @@ def main():
             print("Waiting for bluetooth to connected to security node.")
             bluetooth_client.wait_for_connection()
             print("Bluetooth connected to pi node.\n")
-            bluetooth_client.send_data(("#", quick_start))
+            bluetooth_client.send_data(("#", quick_start)) # send phone number
+            bluetooth_client.send_data(("en", None)) # enable raspberry pi system
 
         print(text.welcome)
 
         print("The program is booting up...\n\n")
         
         adapter = power_detection.AC_Adapter()
-        adapter.addUnpluggedListener(SMS.send_sms)
+        adapter.addUnpluggedListener(send_sms)
         adapter.addUnpluggedListener(Alarm.play_alarm)
         adapter.addUnpluggedListener(Webcam.capture)
         
@@ -100,6 +114,11 @@ def main():
         if not has_battery:
             print("Device does not have battery. Exiting...")
             sys.exit(1)
+
+        # don't let thread finish. Or else SIGINT handler wont work
+        print("here")
+        while True:
+            time.sleep(50)
     
     except InvalidArguments:
         print(text.driver_argument_error)
@@ -145,3 +164,6 @@ def main():
     except Exception:
         print(traceback.format_exc())
         os._exit(1)
+    finally:
+        if bluetooth_client is not None:
+            bluetooth_client.shutdown()

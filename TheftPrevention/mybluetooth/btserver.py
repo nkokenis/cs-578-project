@@ -44,7 +44,12 @@ class BTServer:
         
     def __accpet_connections(self):
         while self.online:
-            self.client_sock, self.client_info = self.server_sock.accept()
+            try:
+                self.client_sock, self.client_info = self.server_sock.accept()
+            except OSError:
+                self.shutdown()
+                break;
+
             # client connected
             for func in self.connect_listeners:
                 func()
@@ -105,8 +110,9 @@ class BTServer:
 
     def disconnect_client(self):
         try:
-            self.client_sock.close()
-            self.client_sock = None
+            if self.client_sock is not None:
+                self.client_sock.close()
+                self.client_sock = None
         except OSError:
             pass
 
