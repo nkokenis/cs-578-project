@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
             bluetooth_client.add_disconnect_listener(lambda: print("Bluetooth disconnected."))
             bluetooth_client.start()
-            print("Waiting for bluetooth to connected to security node.")
+            print("Waiting for bluetooth connection to security node.")
             bluetooth_client.wait_for_connection()
             print("Bluetooth connected to pi node.\n")
             bluetooth_client.send_data(("#", quick_start)) # send phone number
@@ -116,7 +116,6 @@ if __name__ == "__main__":
             sys.exit(1)
 
         # don't let thread finish. Or else SIGINT handler wont work
-        print("here")
         while True:
             time.sleep(50)
     
