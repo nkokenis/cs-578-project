@@ -1,4 +1,4 @@
-import simpleaudio as sa
+import simpleaudio as sa # pip install simpleaudio
 
 
 def play_alarm():
