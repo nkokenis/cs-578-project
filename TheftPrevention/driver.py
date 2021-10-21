@@ -10,7 +10,7 @@ import Webcam
 import SMS
 import Alarm
 from cache import access_cache
-from mybluetooth import btclient
+# from mybluetooth import btclient
 
 """ User defined Errors """
 class UserFailError(Exception):
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
 
     try:
-        print("Starting Flask Server...")
+        # print("Starting Flask Server...")
         # os.system("python app.py &")
         # time.sleep(3)
         print_graphic()
@@ -88,17 +88,17 @@ if __name__ == "__main__":
 
         # desc: setup bluetooth
         # author: Ryan
-        res = input("Would you like to setup pi node? [yes] or [no]:").lower()
-        if 'y' in res:
-            bluetooth_client = btclient.BTClient()
+        # res = input("Would you like to setup pi node? [yes] or [no]:").lower()
+        # if 'y' in res:
+        #     bluetooth_client = btclient.BTClient()
 
-            bluetooth_client.add_disconnect_listener(lambda: print("Bluetooth disconnected."))
-            bluetooth_client.start()
-            print("Waiting for bluetooth connection to security node.")
-            bluetooth_client.wait_for_connection()
-            print("Bluetooth connected to pi node.\n")
-            bluetooth_client.send_data(("#", quick_start)) # send phone number
-            bluetooth_client.send_data(("en", None)) # enable raspberry pi system
+        #     bluetooth_client.add_disconnect_listener(lambda: print("Bluetooth disconnected."))
+        #     bluetooth_client.start()
+        #     print("Waiting for bluetooth connection to security node.")
+        #     bluetooth_client.wait_for_connection()
+        #     print("Bluetooth connected to pi node.\n")
+        #     bluetooth_client.send_data(("#", quick_start)) # send phone number
+        #     bluetooth_client.send_data(("en", None)) # enable raspberry pi system
 
         print(text.welcome)
 
