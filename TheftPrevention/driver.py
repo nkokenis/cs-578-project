@@ -1,11 +1,16 @@
 import os
 import sys
-import SMS
+import signal
+import time
 import traceback
 import user_setup
 from Text import text
 import power_detection
+import Webcam
+import SMS
+import Alarm
 from cache import access_cache
+from mybluetooth import btclient
 
 """ User defined Errors """
 class UserFailError(Exception):
@@ -15,12 +20,13 @@ class InvalidArguments(Exception):
 class SystemExit(Exception):
     pass
 
+
 """ Graphic """
 def print_graphic():
     print("\n"+text.line)
     print(text.graphic)
     print(text.line+"\n")
-    
+
 
 """ Terminal Greeting """
 def intro_text():
@@ -29,7 +35,10 @@ def intro_text():
     print("{}{}PROTECTED{}\n\n"\
         .format(text.CGREEN2,text.BOLD,text.ENDC))
     user_setup.verify()
-    
+
+
+def send_sms():
+    SMS.send_sms(access_cache("phone_number"))
 
 """
 -> Function: main
@@ -41,7 +50,14 @@ N/A
 Errors: Exception
     Any errors occured
 """
-def main():
+def signal_handler(sig, frame):
+    sys.exit(1)
+
+bluetooth_client = None
+
+if __name__ == "__main__":
+    signal.signal(signal.SIGINT, signal_handler)
+
     try:
         print("Starting Flask Server...")
         # os.system("python app.py &")
@@ -69,21 +85,39 @@ def main():
             res.lower()
             if "n" in res:
                 intro_text()
-            else:
-                print(text.welcome)
-        
+
+        # desc: setup bluetooth
+        # author: Ryan
+        res = input("Would you like to setup pi node? [yes] or [no]:").lower()
+        if 'y' in res:
+            bluetooth_client = btclient.BTClient()
+
+            bluetooth_client.add_disconnect_listener(lambda: print("Bluetooth disconnected."))
+            bluetooth_client.start()
+            print("Waiting for bluetooth connection to security node.")
+            bluetooth_client.wait_for_connection()
+            print("Bluetooth connected to pi node.\n")
+            bluetooth_client.send_data(("#", quick_start)) # send phone number
+            bluetooth_client.send_data(("en", None)) # enable raspberry pi system
+
+        print(text.welcome)
+
         print("The program is booting up...\n\n")
         
         adapter = power_detection.AC_Adapter()
-        adapter.addUnpluggedListener(power_detection.play_alarm)
-        adapter.addUnpluggedListener(power_detection.take_photo)
-        adapter.addUnpluggedListener(power_detection.send_sms)
+        adapter.addUnpluggedListener(send_sms)
+        adapter.addUnpluggedListener(Alarm.play_alarm)
+        adapter.addUnpluggedListener(Webcam.capture)
         
-        success = adapter.listen()
+        has_battery = adapter.listen()
 
-        if not success:
+        if not has_battery:
             print("Device does not have battery. Exiting...")
             sys.exit(1)
+
+        # don't let thread finish. Or else SIGINT handler wont work
+        while True:
+            time.sleep(50)
     
     except InvalidArguments:
         print(text.driver_argument_error)
@@ -129,5 +163,6 @@ def main():
     except Exception:
         print(traceback.format_exc())
         os._exit(1)
-
-if __name__ == "__main__": main()
+    finally:
+        if bluetooth_client is not None:
+            bluetooth_client.shutdown()
