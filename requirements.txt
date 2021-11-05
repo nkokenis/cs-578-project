@@ -5,8 +5,6 @@ numpy==1.21.3
 opencv-python==4.5.4.58
 psutil==5.8.0
 PyJWT==2.3.0
-pyobjc-core==7.3
-pyobjc-framework-Cocoa==7.3
 python-decouple==3.5
 pytz==2021.3
 requests==2.26.0
