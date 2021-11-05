@@ -35,6 +35,7 @@ class BTClient:
     def send_data(self, data):
         serialized_data = pickle.dumps(data)
         self.sock.send(serialized_data)
+        self.sock.send(-1)
         
     def __accpet_connections(self):
         while True:
@@ -87,13 +88,18 @@ class BTClient:
 
     def __recv_data(self):
         try:
+            sum_data = b""
             while True:
                 data = self.sock.recv(1024)
                 if data == b'':
                     break
-                deserialized_data = pickle.loads(data)
-                for func in self.data_received_listeners:
-                    func(deserialized_data)
+                elif data == -1:
+                    deserialized_data = pickle.loads(sum_data)
+                    sum_data = b""
+                    for func in self.data_received_listeners:
+                        func(deserialized_data)
+                else:
+                    sum_data += data
         except OSError:
             pass
         finally:

@@ -41,6 +41,7 @@ class BTServer:
     def send_data(self, data):
         serialized_data = pickle.dumps(data)
         self.client_sock.send(serialized_data)
+        self.client_sock.send(-1)
         
     def __accpet_connections(self):
         while self.online:
@@ -70,13 +71,19 @@ class BTServer:
 
     def __recv_data(self):
         try:
+            sum_data = b""
             while self.online:
                 data = self.client_sock.recv(1024)
                 if data == b'':
                     break
-                deserialized_data = pickle.loads(data)
-                for func in self.data_received_listeners:
-                    func(deserialized_data)
+                elif data == -1:
+                    deserialized_data = pickle.loads(sum_data)
+                    sum_data = b""
+                    for func in self.data_received_listeners:
+                        func(deserialized_data)
+                else:
+                    sum_data += data
+
         except OSError:
             pass
         finally:
