@@ -1,20 +1,21 @@
-from logging import exception
 import os
 import json
 import traceback
+
+
 class Invalid_Cache_Key(Exception):
     pass
 
 """
-->Function: update_cache
+-> Function: update_cache
     Determines if file exists: append, if not write
     Updates the users local cache
-->Parameters:
+-> Parameters:
 key: String
     json key
 val: String
     json value
-->Returns:
+-> Returns:
 N/A
 """
 def update_cache(key,val):
