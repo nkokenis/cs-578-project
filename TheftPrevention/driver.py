@@ -2,6 +2,7 @@ import os
 import sys
 import signal
 import time
+import platform
 import traceback
 import user_setup
 from Text import text
@@ -10,7 +11,12 @@ import Webcam
 import SMS
 import Alarm
 from cache import access_cache
-# from mybluetooth import btclient
+
+OS = platform.system().lower()
+
+if(OS == "windows"):
+    from mybluetooth import btclient
+
 
 """ User defined Errors """
 class UserFailError(Exception):
@@ -56,6 +62,7 @@ def signal_handler(sig, frame):
 bluetooth_client = None
 
 if __name__ == "__main__":
+    
     signal.signal(signal.SIGINT, signal_handler)
 
     try:
@@ -88,17 +95,18 @@ if __name__ == "__main__":
 
         # desc: setup bluetooth
         # author: Ryan
-        # res = input("Would you like to setup pi node? [yes] or [no]:").lower()
-        # if 'y' in res:
-        #     bluetooth_client = btclient.BTClient()
+        if(OS == "windows"):
+            res = input("Would you like to setup pi node? [yes] or [no]:").lower()
+            if 'y' in res:
+                bluetooth_client = btclient.BTClient()
 
-        #     bluetooth_client.add_disconnect_listener(lambda: print("Bluetooth disconnected."))
-        #     bluetooth_client.start()
-        #     print("Waiting for bluetooth connection to security node.")
-        #     bluetooth_client.wait_for_connection()
-        #     print("Bluetooth connected to pi node.\n")
-        #     bluetooth_client.send_data(("#", quick_start)) # send phone number
-        #     bluetooth_client.send_data(("en", None)) # enable raspberry pi system
+                bluetooth_client.add_disconnect_listener(lambda: print("Bluetooth disconnected."))
+                bluetooth_client.start()
+                print("Waiting for bluetooth connection to security node.")
+                bluetooth_client.wait_for_connection()
+                print("Bluetooth connected to pi node.\n")
+                bluetooth_client.send_data(("#", quick_start)) # send phone number
+                bluetooth_client.send_data(("en", None)) # enable raspberry pi system
 
         print(text.welcome)
 

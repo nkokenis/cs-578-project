@@ -38,11 +38,9 @@ sid: String
 """
 def send_sms(phone_number):
     msg=\
-    """
-    Notice from TheftPrevention
-
-    Your device has been disconnected!
-    """
+"""
+TheftPrevention has detected that your device is DISCONNECTED!
+"""
     message = client.messages.create(
         to=phone_number,
         from_="+16572014198",
