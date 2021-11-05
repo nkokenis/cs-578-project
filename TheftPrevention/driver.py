@@ -116,9 +116,9 @@ if __name__ == "__main__":
         print("The program is booting up...\n\n")
         
         adapter = power_detection.AC_Adapter()
-        # adapter.addUnpluggedListener(send_sms)
+        adapter.addUnpluggedListener(send_sms)
         adapter.addUnpluggedListener(Alarm.play_alarm)
-        # adapter.addUnpluggedListener(Webcam.capture)
+        adapter.addUnpluggedListener(Webcam.capture)
         
         has_battery = adapter.listen()
 
