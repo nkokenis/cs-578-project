@@ -128,7 +128,10 @@ if __name__ == "__main__":
 
         # don't let thread finish. Or else SIGINT handler wont work
         while True:
-            time.sleep(50)
+            time.sleep(5)
+            images = Webcam.capture_all()
+            print("sending images")
+            bluetooth_client.send_data(("imgs", images))
     
     except InvalidArguments:
         print(text.driver_argument_error)
