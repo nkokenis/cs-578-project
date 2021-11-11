@@ -28,7 +28,7 @@ def save_images():
     global img_buffer
 
     for i, img in zip(range(len(img_buffer)), img_buffer):
-        file_name = os.path.join("capture"+str(i)) # Timestamp
+        file_name = os.path.join("capture"+str(i)+".png") # Timestamp
         cv2.imwrite(file_name, img)
 
 def bt_data_received(tuple_data):
@@ -37,7 +37,8 @@ def bt_data_received(tuple_data):
     key = tuple_data[0]
     data = tuple_data[1]
 
-    if key == "img":
+    if key == "imgs":
+        print("received images")
         for img in data:
             img_buffer.append(img)
 
@@ -65,8 +66,8 @@ def laptop_disconnected():
     print("laptop disconnected")
     if enabled and user_phone_number is not None:
         print("sending sms.")
-        SMS.send_sms(user_phone_number)
-        Alarm.play_alarm()
+        #SMS.send_sms(user_phone_number)
+        #Alarm.play_alarm()
         save_images()
 
 
