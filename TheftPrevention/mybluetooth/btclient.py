@@ -3,6 +3,7 @@ import pickle
 import threading
 import bluetooth # pip pybluez22
 
+EOF = b'\xFF'
 
 class BTClient:
     def __init__(self, uuid='e4399be5-b392-4490-a842-cc5abce72cb9'):
@@ -35,12 +36,12 @@ class BTClient:
     def send_data(self, data):
         serialized_data = pickle.dumps(data)
         self.sock.send(serialized_data)
-        self.sock.send(-1)
+        self.sock.send(EOF)
         
     def __accpet_connections(self):
         while True:
             service_matches = bluetooth.find_service(uuid=self.uuid)
-
+            #print(service_matches)
             if len(service_matches) == 0:
                 if self.retry_connection:
                     for func in self.retry_listeners:
@@ -91,9 +92,10 @@ class BTClient:
             sum_data = b""
             while True:
                 data = self.sock.recv(1024)
+                print(data)
                 if data == b'':
                     break
-                elif data == -1:
+                elif data == EOF:
                     deserialized_data = pickle.loads(sum_data)
                     sum_data = b""
                     for func in self.data_received_listeners:
