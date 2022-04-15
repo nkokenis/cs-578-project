@@ -118,7 +118,7 @@ if __name__ == "__main__":
         adapter = power_detection.AC_Adapter()
         adapter.addUnpluggedListener(send_sms)
         adapter.addUnpluggedListener(Alarm.play_alarm)
-        adapter.addUnpluggedListener(Webcam.capture)
+#        adapter.addUnpluggedListener(Webcam.capture)
         
         has_battery = adapter.listen()
 
