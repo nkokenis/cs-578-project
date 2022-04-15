@@ -9,13 +9,37 @@ import pickle
 import traceback
 from datetime import datetime
 
+try_range = range(0, 3)
+valid_cam_idxs = []
+
+for i in try_range:
+    cam = cv2.VideoCapture(i, cv2.CAP_DSHOW)
+    accessed, img = cam.read()  # FORMAT: bool, Image obj
+    if accessed:
+        valid_cam_idxs.append(i)
+
+    cam.release()
+
+
+def capture_all():
+    images = []
+    for cam_idx in valid_cam_idxs:
+        cam = cv2.VideoCapture(cam_idx, cv2.CAP_DSHOW)
+        accessed, img = cam.read()  # FORMAT: bool, Image obj
+
+        if accessed:
+            images.append(img)
+
+    cam.release()
+
+    return images
 
 def capture():
     """
     accesses camera and takes picture. Saves in directory
     :return:            bytes, Image serialized or None, no camera access
     """
-    cam = cv2.VideoCapture(0)
+    cam = cv2.VideoCapture(1, cv2.CAP_DSHOW)
     accessed, img = cam.read()  # FORMAT: bool, Image obj
     file_name = datetime.now().strftime('%m_%d_%Y_%H_%M_%S.png')  # Timestamp
 
@@ -61,6 +85,8 @@ if __name__ == '__main__':
 
     # TEST CASE 1: Capturing image
     capture()
+    #print(valid_cam_idxs)
+    #print(len(capture_all()))
     #
     # # TEST CASE 2: Capturing image and previewing with pickled bytes
     # pickle_bytes = capture()
